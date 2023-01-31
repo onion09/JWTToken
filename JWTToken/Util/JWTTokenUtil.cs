@@ -1,6 +1,7 @@
 ﻿using JWTToken.Model.DBModel;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -8,19 +9,27 @@ namespace JWTToken.Util
 {
     public interface IJwtUtils
     {
-        string GenerateToken(User user);
+        string GenerateToken(User user, List<Permission> permissions);
         string ValidateToken(string token);
     }
     public class JWTTokenUtil : IJwtUtils
     {
-        public string GenerateToken(User user)
+        public string GenerateToken(User user, List<Permission> permissions)
         {
+            var subject = new ClaimsIdentity();
+            var claims = new List<Claim>();
+            claims.Add(new Claim("id", user.UserID.ToString()));
+            foreach(var permission in permissions)
+            {
+                claims.Add(new Claim($"{permission.PremissionName}", permission.PremissionName));
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
             //security key apply to token
             var key = Encoding.ASCII.GetBytes("superSecretKey@345");
             var tokenDescritopr = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.UserID.ToString()) }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };

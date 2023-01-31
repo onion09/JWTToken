@@ -32,22 +32,24 @@ namespace JWTToken.Services
             }
             public string Authenticate(string username, string password)
             {
-                var user = new User();
-                using (var conn = new SqlConnection(_configuration.GetConnectionString("MyConn1")))
-                {
-                    conn.Open();
-                    var cmd = new SqlCommand(_checkIfMatchQuery, conn);
-                    cmd.Parameters.AddWithValue("@username", username);
-                    cmd.Parameters.AddWithValue("@password", password);
-                    //varify user credential
-                    var count = Convert.ToInt32(cmd.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        user.Password = password;
-                        user.UserName = username;
-                    }
-                    else return null;
-                }
+                //var user = new User();
+                //using (var conn = new SqlConnection(_configuration.GetConnectionString("MyConn1")))
+                //{
+                //    conn.Open();
+                //    var cmd = new SqlCommand(_checkIfMatchQuery, conn);
+                //    cmd.Parameters.AddWithValue("@username", username);
+                //    cmd.Parameters.AddWithValue("@password", password);
+                //    //varify user credential
+                //    var count = Convert.ToInt32(cmd.ExecuteScalar());
+                //    if (count > 0)
+                //    {
+                //        user.Password = password;
+                //        user.UserName = username;
+                //    }
+                //    else return null;
+                //}
+                var user = _dbContext.Users.FirstOrDefault(x=>x.UserName == username && x.Password== password);
+                if (user == null) return null;
 
                 var token = _jwtUtils.GenerateToken(user);
                 return token;

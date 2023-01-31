@@ -27,31 +27,7 @@ namespace JWTToken.Controller
             return "test";
         }
 
-        /*
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] AuthenticationRequest user)
-        {
-            if (user is null)
-            {
-                return BadRequest("Invalid client request");
-            }
-            if (user.Username == "test" && user.Password == "test")
-            {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokeOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:44370",
-                    audience: "https://localhost:44370",
-                    claims: new List<Claim>() { new Claim("id", "1") },
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signinCredentials
-                );
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                return Ok(new AuthenticationResponse { Token = tokenString });
-            }
-            return Unauthorized();
-        }
-        */
+        
 
 
         [HttpPost("login")]

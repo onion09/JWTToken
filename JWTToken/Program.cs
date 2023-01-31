@@ -3,6 +3,7 @@ using JWTToken.Middleware;
 using JWTToken.MiddleWare;
 using JWTToken.Model.DBModel;
 using JWTToken.Util;
+using Serilog;
 using static JWTToken.Services.UseerServices;
 
 namespace JWTToken
@@ -23,6 +24,11 @@ namespace JWTToken
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+            var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(logger);
 
             //apply and configure the filter -- Globally
             //builder.Services.AddControllers(options => options.Filters.Add(new MyExceptionFilter())); //typeof(MyExceptionFilter)

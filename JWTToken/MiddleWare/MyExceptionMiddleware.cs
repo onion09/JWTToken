@@ -1,6 +1,7 @@
 ﻿using JWTToken.Exceptions;
 using JWTToken.Models;
 using Microsoft.AspNetCore.Diagnostics;
+using Newtonsoft.Json;
 using System.Net;
 
 namespace JWTToken.Middleware
@@ -27,6 +28,7 @@ namespace JWTToken.Middleware
             }
             catch (Exception ex)
             {
+                await HandleException(context, ex);
 
                 var response = context.Response;
                 response.ContentType= "application/json"; //accept json request
@@ -54,6 +56,16 @@ namespace JWTToken.Middleware
                 await response.WriteAsync(exceptionResponse.ToString());
 
             }
+        }
+        private Task HandleException(HttpContext context, Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            var errorMessageObject = new { Message = ex.Message, Code = "system_error" };
+
+            var errorMessage = JsonConvert.SerializeObject(errorMessageObject);
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return context.Response.WriteAsync(errorMessage);
         }
     }
 }

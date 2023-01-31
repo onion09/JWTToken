@@ -59,6 +59,7 @@ namespace JWTToken.Services
                 var user = _dbContext.Users.Include(q=>q.UserPermissions).ThenInclude(q =>q.Permission).Include(q=>q.UserDetail).Where(q=>q.UserID == id).FirstOrDefault();
                 return user;
             }
+
             public int DeleteUser(int userId)
             {
                 try

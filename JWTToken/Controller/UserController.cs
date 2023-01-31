@@ -80,6 +80,8 @@ namespace JWTToken.Controller
         [HttpGet("/user")]
         public ActionResult<List<UserDisplay>> ListAllUser()
         {
+            _logger.LogInformation($"ListAllUser get called at {DateTime.Now}");
+
             var list = _user.GetAllUser();
             if(list == null)
             {
@@ -91,6 +93,8 @@ namespace JWTToken.Controller
 
         public ActionResult<GetUser> GetUserById(int userId)
         {
+            _logger.LogInformation($"GetUserById id: {userId} get called at {DateTime.Now}");
+
             GetUser userInfo = _user.GetUserById(userId);
             if (userInfo == null) 
             { 

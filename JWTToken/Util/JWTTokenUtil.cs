@@ -57,5 +57,6 @@ namespace JWTToken.Util
             var userID = ((JwtSecurityToken)validatedToken).Claims.First(x => x.Type == "id").Value;
             return userID;
         }
+
     }
 }

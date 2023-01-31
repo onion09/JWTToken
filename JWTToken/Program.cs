@@ -1,3 +1,5 @@
+using JWTToken.Filter;
+using JWTToken.Middleware;
 using JWTToken.MiddleWare;
 using JWTToken.Model.DBModel;
 using JWTToken.Util;
@@ -10,26 +12,7 @@ namespace JWTToken
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            /*
-            builder.Services.AddAuthentication(options => {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "https://localhost:44370",
-                        ValidAudience = "https://localhost:44370",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
-                    };
-                });
-            builder.Services.AddAuthorization();
-            */
+           
 
             //add service for dependency injection
             builder.Services.AddTransient<IUserService, UserService>();
@@ -40,6 +23,10 @@ namespace JWTToken
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+            //apply and configure the filter -- Globally
+            //builder.Services.AddControllers(options => options.Filters.Add(new MyExceptionFilter())); //typeof(MyExceptionFilter)
+
             builder.Services.AddDbContext<AuthDBContext>();
 
             var app = builder.Build();
@@ -65,6 +52,8 @@ namespace JWTToken
             app.UseAuthentication();
             app.UseAuthorization();
             */
+
+            app.UseMiddleware<MyExceptionMiddleware>();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using JWTToken.Model.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
+using JWTToken.Exceptions;
 
 namespace JWTToken.Services
 {
@@ -32,26 +33,16 @@ namespace JWTToken.Services
             }
             public string Authenticate(string username, string password)
             {
-                //var user = new User();
-                //using (var conn = new SqlConnection(_configuration.GetConnectionString("MyConn1")))
-                //{
-                //    conn.Open();
-                //    var cmd = new SqlCommand(_checkIfMatchQuery, conn);
-                //    cmd.Parameters.AddWithValue("@username", username);
-                //    cmd.Parameters.AddWithValue("@password", password);
-                //    //varify user credential
-                //    var count = Convert.ToInt32(cmd.ExecuteScalar());
-                //    if (count > 0)
-                //    {
-                //        user.Password = password;
-                //        user.UserName = username;
-                //    }
-                //    else return null;
-                //}
+
                 var user = _dbContext.Users.FirstOrDefault(x=>x.UserName == username && x.Password== password);
                 if (user == null) return null;
-
-                var token = _jwtUtils.GenerateToken(user);
+                var userPermissions = FindUserById(user.UserID).UserPermissions.ToList();
+                var permissions = new List<Permission>();
+                foreach (var item in userPermissions)
+                {
+                    permissions.Add(item.Permission);
+                }
+                var token = _jwtUtils.GenerateToken(user, permissions);
                 return token;
 
             }
@@ -65,36 +56,45 @@ namespace JWTToken.Services
             }
             private User FindUserById(int id)
             {
-                var user = _dbContext.Users.Include(q=>q.UserPermissions).Include(q=>q.UserDetail).Where(q=>q.UserID == id).FirstOrDefault();
+                var user = _dbContext.Users.Include(q=>q.UserPermissions).ThenInclude(q =>q.Permission).Include(q=>q.UserDetail).Where(q=>q.UserID == id).FirstOrDefault();
                 return user;
             }
             public int DeleteUser(int userId)
             {
-                var user = FindUserById(userId);
-                if(user != null)
+                try
                 {
-                    foreach(var userPermission in user.UserPermissions.ToList())
+                    var user = FindUserById(userId);
+                    if (user != null)
                     {
-                        _dbContext.UserPermissions.Remove(userPermission); 
+                        foreach (var userPermission in user.UserPermissions.ToList())
+                        {
+                            _dbContext.UserPermissions.Remove(userPermission);
+                        }
+                        _dbContext.Users.Remove(user);
+                        _dbContext.SaveChanges();
                     }
-                    _dbContext.Users.Remove(user);
-                    _dbContext.SaveChanges();
                 }
+                catch { new UserNotFoundException ("userId not found"); }
                 return userId;
+
             }
             public User UserActivation(int userId, bool activate)
             {
                 var user = FindUserById(userId);
-                if(user != null)
-                {
-                    user.Staus = activate;
-                    _dbContext.SaveChanges();
-                }
+
+                if (user == null) return null;
+                user.Staus = activate;
+                _dbContext.SaveChanges();
+
                 return user;
             }
             public List<UserDisplay> GetAllUser()
             {
                 var list = _dbContext.Users.ToList();
+                if(list == null)
+                {
+                    throw new UserNotFoundException("There are no Users on Database");
+                }
                 var userlist = new List<UserDisplay>();
                 foreach(var item in list)
                 {
@@ -105,15 +105,19 @@ namespace JWTToken.Services
             public GetUser GetUserById(int id)
             {
                 var userdetail = new GetUser();
+
                 var user = _dbContext.Users.Include(q => q.UserDetail).Where(q => q.UserID == id).FirstOrDefault();
-                if(user != null)
+                if (user == null)
                 {
-                    userdetail.UserId = id;
-                    userdetail.Email=user.UserDetail.Email;
-                    userdetail.FirstName= user.UserDetail.FirstName;
-                    userdetail.LastName= user.UserDetail.LastName;
-                    userdetail.username = user.UserName;
+                    return null;
                 }
+                userdetail.UserId = id;
+                userdetail.Email = user.UserDetail.Email;
+                userdetail.FirstName = user.UserDetail.FirstName;
+                userdetail.LastName = user.UserDetail.LastName;
+                userdetail.username = user.UserName;
+
+
                 return userdetail;
             }
         }

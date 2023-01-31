@@ -8,13 +8,15 @@ namespace JWTToken.Model.DBModel
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+
+        public DbSet<UserDetail> UsersDetails { get; set; }
         public AuthDBContext(IConfiguration configuration)
         {
             _configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder option)
         {
-            option.UseSqlServer(_configuration.GetConnectionString("MyConn"));
+            option.UseSqlServer(_configuration.GetConnectionString("MyConn1"));
 
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +31,10 @@ namespace JWTToken.Model.DBModel
                 .HasOne(up => up.User)
                 .WithMany(u => u.UserPermissions)
                 .HasForeignKey(up => up.UserId);
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.UserDetail)
+                .WithOne(ud => ud.User)
+                .HasForeignKey<UserDetail>(u => u.UserId);
         }
 
     }

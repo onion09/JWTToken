@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JWTToken.Model.DBModel
 
@@ -7,6 +8,7 @@ namespace JWTToken.Model.DBModel
 
     public class Permission
     {
+        [Key]
         public int PremissionId { get; set; }
         public string PremissionName { get; set; }
         public ICollection<UserPermission> UserPermissions { get; set; }

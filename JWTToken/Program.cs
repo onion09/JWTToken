@@ -33,15 +33,16 @@ namespace JWTToken
 
             //add service for dependency injection
             builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<UserService>();
 
             builder.Services.AddTransient<IJwtUtils, JWTTokenUtil>();
             //builder.Services.AddAuthorization();
 
             // Add services to the container.
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<AuthDBContext>();
 
             var app = builder.Build();
-            builder.Services.AddDbContext<AuthDBContext>();
 
 
             // Configure the HTTP request pipeline.

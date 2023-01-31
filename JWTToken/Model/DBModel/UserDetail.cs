@@ -3,17 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace JWTToken.Model.DBModel
 {
-    [Table("UserPermission")]
+    [Table("UserDetail")]
 
-    public class UserPermission
+    public class UserDetail
     {
         public int Id { get; set; }
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public int UserId { get; set; }
         [JsonIgnore]
         public User User { get; set; }
-        public int PermissionId { get; set; }
-        [JsonIgnore]
-
-        public Permission Permission { get; set; }
     }
 }

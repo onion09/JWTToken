@@ -34,9 +34,7 @@ namespace JWTToken.Controller
             return "test";
         }
 
-        
-
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login([FromBody] AuthenticationRequest user)
         {
@@ -48,6 +46,7 @@ namespace JWTToken.Controller
             return Ok(new { message = "Successfully Authenticaed", accessToken = token} );
 
         }
+
         [HttpPost("/user")]
         public ActionResult Registration([FromBody] UserRegistration userInfoWhole)
         {
@@ -57,6 +56,7 @@ namespace JWTToken.Controller
             catch (UserNotFoundException ex) { }
             return Ok();
         }
+        
         [HttpDelete("/user")]
         public ActionResult<int> DeleteUser([FromQuery] int userId)
         {

@@ -19,12 +19,15 @@ namespace JWTToken.MiddleWare
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             //validate token
-            string userId = jwtUtils.ValidateToken(token);
-            if (userId != null)
+            var permissions  = jwtUtils.ValidatePermissions(token);
+            if (permissions != null)
             {
-                context.Items["UserId"] = userId;
-
-
+                for(var i = 0; i < permissions.Count-1; i++)
+                {
+                    var permission = permissions[i];
+                    context.Items[$"{permission}"] = permissions[i];
+                }
+                context.Items["UserId"] = permissions.Last();
             }
             await _next(context);
             /*

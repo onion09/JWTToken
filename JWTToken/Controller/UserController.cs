@@ -5,8 +5,10 @@ using JWTToken.Model.DBModel;
 using JWTToken.Model.DTO;
 using JWTToken.Model.ViewModel;
 using JWTToken.Util;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static JWTToken.Services.UseerServices;
+using AuthorizeAttribute = JWTToken.Util.Authorize1Attribute;
 
 namespace JWTToken.Controller
 {
@@ -25,7 +27,7 @@ namespace JWTToken.Controller
             _logger = logger;
         }
 
-        [Authorize]
+        [Authorize1]
         [HttpGet("test")]
         public string Test()
         {
@@ -63,6 +65,9 @@ namespace JWTToken.Controller
             _user.DeleteUser(userId);
             return Ok(userId);
         }
+
+        [UpdateAuthoriaztion]
+
         [HttpPatch("/user/{userId}/status")]
         public ActionResult<User> UpdateActivation([FromQuery] bool activate, int userId)
         {

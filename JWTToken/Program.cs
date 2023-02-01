@@ -54,10 +54,10 @@ namespace JWTToken
 
             app.UseMiddleware<JwtMiddleware>();
 
-            /*
-            app.UseAuthentication();
-            app.UseAuthorization();
-            */
+
+            //app.UseAuthentication();
+            //app.UseAuthorization();
+
 
             app.UseMiddleware<MyExceptionMiddleware>();
             app.MapControllerRoute(

@@ -6,7 +6,7 @@ namespace JWTToken.Util
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 
-    public class AuthorizeAttribute:Attribute, IAuthorizationFilter
+    public class Authorize1Attribute : Attribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {

@@ -5,6 +5,7 @@ using JWTToken.Util;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
+using System.Collections.Generic;
 
 namespace JWTToken.Services
 {
@@ -16,7 +17,7 @@ namespace JWTToken.Services
             _dbContext = dbContext;
         }
         
-        public OrderInfo GetOrderResponse(int orderId)
+        public OrderInfo GetOrderInfo(int orderId)
         {
             var order = _dbContext.Orders.Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
@@ -45,7 +46,7 @@ namespace JWTToken.Services
             };
             return orderInfo;
         }
-        private UserResponse GetUserById(int userId)
+        public UserResponse GetUserById(int userId)
         {
             var userdetail = new UserResponse();
 
@@ -63,7 +64,37 @@ namespace JWTToken.Services
 
             return userdetail;
         }
+        public async Task<OrderResponse> GetOrderResponse(int orderId)
+        {
+            var tasklist = GetOrderItemsAsync(orderId);
+            var orderItemList = new List<OrderItemResponse>();
+            var orderResponse = new OrderResponse();
+            orderResponse.OrderId = orderId;            
+            var list = await tasklist;
+            var taskorder = GetOrderById(orderId);
+            foreach (var item in list)
+            {
+                orderItemList.Add(new OrderItemResponse { ItemName = item.Item.ItemName, Quantity = item.Quantity });
+            }
+            var order = await taskorder;
+            orderResponse.OrderItemResponseList = orderItemList;
+            orderResponse.Time = order.OrderTime;
+            orderResponse.TotalPrice = order.TotalPrice;
+                
+            
+            return orderResponse;
+        }
 
-
+        private async Task<List<OrderItem>> GetOrderItemsAsync(int orderId)
+        {
+            var list = await _dbContext.OrderItems.Include(oi => oi.Item).Where(oi => oi.OrderId == orderId).ToListAsync();
+            return list;
+        }
+        private async Task<Order> GetOrderById(int orderId)
+        {
+            var order = await _dbContext.Orders
+               .Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
+            return order;
+        }
     }
 }

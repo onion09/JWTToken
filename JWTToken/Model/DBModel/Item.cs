@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JWTToken.Model.DBModel
 {
@@ -7,6 +8,7 @@ namespace JWTToken.Model.DBModel
     {
         public int ItemId { get; set; }
         public string ItemName { get; set; }
+        [JsonIgnore]
         public ICollection<OrderItem> OrderItems { get; set; }
    
     }

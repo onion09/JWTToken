@@ -7,6 +7,7 @@ using JWTToken.Model.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 using JWTToken.Exceptions;
+using JWTToken.Model.OrderResponse;
 
 namespace JWTToken.Services
 {
@@ -113,6 +114,24 @@ namespace JWTToken.Services
                     return null;
                 }
                 userdetail.UserId = id;
+                userdetail.Email = user.UserDetail.Email;
+                userdetail.FirstName = user.UserDetail.FirstName;
+                userdetail.LastName = user.UserDetail.LastName;
+                userdetail.username = user.UserName;
+
+
+                return userdetail;
+            }
+            public UserResponse GetUserResponseById(int userId)
+            {
+                var userdetail = new UserResponse();
+
+                var user = _dbContext.Users.Include(q => q.UserDetail).Where(q => q.UserID == userId).FirstOrDefault();
+                if (user == null)
+                {
+                    return null;
+                }
+                userdetail.UserId = userId;
                 userdetail.Email = user.UserDetail.Email;
                 userdetail.FirstName = user.UserDetail.FirstName;
                 userdetail.LastName = user.UserDetail.LastName;

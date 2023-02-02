@@ -34,7 +34,7 @@ namespace JWTToken.Controller
             return "test";
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login([FromBody] AuthenticationRequest user)
         {

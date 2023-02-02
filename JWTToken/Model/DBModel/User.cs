@@ -14,5 +14,6 @@ namespace JWTToken.Model.DBModel
         public UserDetail UserDetail { get; set; }
 
         public ICollection<UserPermission>? UserPermissions { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }

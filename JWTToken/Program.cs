@@ -2,6 +2,7 @@ using JWTToken.Filter;
 using JWTToken.Middleware;
 using JWTToken.MiddleWare;
 using JWTToken.Model.DBModel;
+using JWTToken.Services;
 using JWTToken.Util;
 using Serilog;
 using static JWTToken.Services.UseerServices;
@@ -18,7 +19,7 @@ namespace JWTToken
             //add service for dependency injection
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<UserService>();
-
+            builder.Services.AddTransient<OrderService>();
             builder.Services.AddTransient<IJwtUtils, JWTTokenUtil>();
             //builder.Services.AddAuthorization();
 
@@ -34,6 +35,7 @@ namespace JWTToken
             //builder.Services.AddControllers(options => options.Filters.Add(new MyExceptionFilter())); //typeof(MyExceptionFilter)
 
             builder.Services.AddDbContext<AuthDBContext>();
+            builder.Services.AddDbContext<OrderDbContext>();
 
             var app = builder.Build();
 
@@ -55,8 +57,8 @@ namespace JWTToken
             app.UseMiddleware<JwtMiddleware>();
 
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
 
             app.UseMiddleware<MyExceptionMiddleware>();
